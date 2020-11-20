@@ -1,4 +1,4 @@
 {
-  "db": "mongodb://localhost/instagram",
+  "db": "mongodb+srv://nehal:nehal123@instagram.uckni.mongodb.net/Instagram?retryWrites=true&w=majority",
   "jwtPrivateKey": "myprivatekey"
 }
