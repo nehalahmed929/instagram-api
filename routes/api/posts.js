@@ -5,25 +5,46 @@ var auth = require("../../middlewares/auth");
 var admin = require("../../middlewares/admin");
 var { Post } = require("../../models/Post");
 var multer = require("multer");
-var upload = multer({ dest: "uploads/" });
-var { config, uploader } = require("cloudinary");
+var cldnryConfig = require("../../config/cloudinary.json");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-const cloudinaryConfig = () => {
-  config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  });
-};
+cloudinary.config({
+  cloud_name: cldnryConfig.cloudName,
+  api_key: cldnryConfig.apiKey,
+  api_secret: cldnryConfig.apiSecret,
+});
 
-const storage = multer.memoryStorage();const multerUploads = multer({ storage }).single(‘image’);
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+
+  params: {
+    folder: "insta",
+    // allowedFormats: ["png"],
+    // transformation: [{ width: 30, height: 30, crop: "limit" }],
+  },
+});
+const parser = multer({ storage: storage });
+
+router.post("/", parser.single("image"), async function (req, res, next) {
+  let post = new Post();
+  post.caption = req.body.caption;
+  post.imageUrl = req.file.path;
+  post.user = req.body.userId;
+  console.log(req.body.caption);
+  console.log(req.file);
+  await post.save();
+  res.send(post);
+});
 
 router.get("/", async function (req, res, next) {
   console.log(req.user);
   let page = Number(req.query.page ? req.query.page : 1);
   let perPage = Number(req.query.perPage ? req.query.perPage : 10);
   let skipRecords = perPage * (page - 1);
-  let posts = await Post.find().skip(skipRecords).limit(perPage);
+  let posts = await Post.find().populate("user");
+  // .skip(skipRecords)
+  // .limit(perPage);
   let total = await Post.find().countDocuments();
   res.send({ total, posts });
 });
@@ -49,16 +70,6 @@ router.put("/:id", validate, auth, admin, async function (req, res, next) {
 router.delete("/:id", auth, admin, async function (req, res, next) {
   let post = await Post.findByIdAndDelete(req.params.id);
 
-  res.send(post);
-});
-
-router.post("/", upload.single("file"), async function (req, res, next) {
-  let post = new Post();
-  post.name = req.body.name;
-  post.price = req.body.price;
-  console.log(req.body.caption);
-  // console.log(req.file);
-  await post.save();
   res.send(post);
 });
 

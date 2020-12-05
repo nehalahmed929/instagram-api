@@ -6,6 +6,10 @@ userSchema = mongoose.Schema({
   name: String,
   email: String,
   password: String,
+  imageUrl: {
+    type: String,
+    default: null,
+  },
   role: {
     type: String,
     default: "user",
