@@ -37,6 +37,10 @@ router.post("/", parser.single("image"), async function (req, res, next) {
   res.send(post);
 });
 
+router.get("/test", async function (req, res, next) {
+  res.send("Request recieved Sucessfully");
+});
+
 router.get("/", async function (req, res, next) {
   console.log(req.user);
   let page = Number(req.query.page ? req.query.page : 1);
