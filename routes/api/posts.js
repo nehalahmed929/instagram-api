@@ -42,7 +42,7 @@ router.get("/test", async function (req, res, next) {
 });
 
 router.get("/", async function (req, res, next) {
-  console.log(req.user);
+  // console.log(req.user);
   let page = Number(req.query.page ? req.query.page : 1);
   let perPage = Number(req.query.perPage ? req.query.perPage : 10);
   let skipRecords = perPage * (page - 1);

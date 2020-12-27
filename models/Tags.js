@@ -1,32 +1,37 @@
 var mongoose = require("mongoose");
 var joi = require("joi");
 
-postSchema = mongoose.Schema({
-  imageUrl: String,
-  caption: String,
-  user: {
+tagSchema = mongoose.Schema({
+  post: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Post",
+  },
+
+  taggedUser: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+
   createdAt: {
     type: Date,
     default: Date.now,
   },
+
   updatedAt: {
     type: Date,
     default: Date.now,
   },
 });
 
-let Post = mongoose.model("Post", postSchema);
+let Tag = mongoose.model("Tag", tagSchema);
 
-function validatePost(data) {
+function validateTag(data) {
   const schema = joi.object({
-    imageUrl: joi.string(),
-    caption: joi.string(),
+    post: joi.required(),
+    taggedUser: joi.required(),
   });
   return schema.validate(data, { abortEarly: false });
 }
 
-module.exports.Post = Post;
-module.exports.validate = validatePost;
+module.exports.Tag = Tag;
+module.exports.validate = validateTag;

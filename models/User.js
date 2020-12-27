@@ -14,6 +14,23 @@ userSchema = mongoose.Schema({
     type: String,
     default: "user",
   },
+
+  account: {
+    type: String,
+    enum: ["public", "private"],
+    default: "public",
+  },
+  dateOfBirth: Date,
+  biography: String,
+
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 userSchema.methods.genHashPass = async function () {

@@ -7,6 +7,12 @@ var mongoose = require("mongoose");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/api/users");
 var postsRouter = require("./routes/api/posts");
+var likesRouter = require("./routes/api/likes");
+var commentsRouter = require("./routes/api/comments");
+var friendshipsRouter = require("./routes/api/friendships");
+var chatsRouter = require("./routes/api/chats");
+var chatUsersRouter = require("./routes/api/chatUsers");
+var messagesRouter = require("./routes/api/messages");
 var config = require("config");
 var cors = require("cors");
 
@@ -26,6 +32,12 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/posts", postsRouter);
+app.use("/api/likes", likesRouter);
+app.use("/api/comments", commentsRouter);
+app.use("/api/friendships", friendshipsRouter);
+app.use("/api/chats", chatsRouter);
+app.use("/api/chatUsers", chatUsersRouter);
+app.use("/api/messages", messagesRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

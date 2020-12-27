@@ -7,6 +7,9 @@
 var app = require("../app");
 var debug = require("debug")("instagram-api:server");
 var http = require("http");
+var { Message } = require("../models/Message");
+var { Chat } = require("../models/Chat");
+var { ChatUser } = require("../models/ChatUser");
 
 /**
  * Get port from environment and store in Express.
@@ -20,11 +23,61 @@ app.set("port", port);
  */
 
 var server = http.createServer(app);
-
+var socketio = require("socket.io");
 /**
  * Listen on provided port, on all network interfaces.
  */
+const io = socketio(server, {
+  cors: {
+    origin: "*",
+  },
+});
+io.on("connection", (socket) => {
+  console.log("we have a new connection");
 
+  socket.on("newMessage", (data) => {
+    console.log("neww message arrived");
+    try {
+      if (data.chatId) {
+        let message = new Message();
+        message.message = data.newMessage;
+        message.user = data.chatUserId;
+        message.chat = data.chatId;
+        message.save((err, doc) => {
+          return io.emit("messageSaved", doc);
+        });
+      } else {
+        var chat = new Chat();
+        chat.save((err, doc) => {
+          let chatUser = new ChatUser();
+          chatUser.user = data.chatUserId;
+          chatUser.chat = doc._id;
+
+          let chatUser2 = new ChatUser();
+          chatUser2.user = data.loggedInUserId;
+          chatUserw.chat = doc._id;
+
+          let message = new Message();
+          message.message = data.newMessage;
+          message.user = data.chatUserId;
+          message.chat = doc._id;
+
+          chatUser.save();
+          chatUser2.save();
+          message.save((err, doc) => {
+            return io.emit("messageSaved", doc);
+          });
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("user left");
+  });
+});
 server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);

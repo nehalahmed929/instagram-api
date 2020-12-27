@@ -6,6 +6,12 @@ var jwt = require("jsonwebtoken");
 var config = require("config");
 var router = express.Router();
 
+router.get("/", async function (req, res, next) {
+  let users = await User.find();
+  let total = await User.find().countDocuments();
+  res.send({ total, users });
+});
+
 router.post("/register", async function (req, res, next) {
   let user = await User.findOne({ email: req.body.email });
   if (user) return res.status(400).send("User with given email already exists");
