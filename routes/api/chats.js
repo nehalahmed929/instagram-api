@@ -3,8 +3,9 @@ var router = express.Router();
 var auth = require("../../middlewares/auth");
 var admin = require("../../middlewares/admin");
 var { Chat } = require("../../models/Chat");
+var { ChatUser } = require("../../models/ChatUser");
 
-router.get("/", async function (req, res, next) {
+router.post("/loggedInUserchats", async function (req, res, next) {
   let chats = await Chat.find();
   res.send(chats);
 });

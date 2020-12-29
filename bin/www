@@ -32,13 +32,15 @@ const io = socketio(server, {
     origin: "*",
   },
 });
+var counter = 0;
 io.on("connection", (socket) => {
   console.log("we have a new connection");
 
-  socket.on("newMessage", (data) => {
+  socket.on("newMessage", async (data) => {
     console.log("neww message arrived");
     try {
-      if (data.chatId) {
+      var chat = await Chat.findById(data.chatId);
+      if (chat) {
         let message = new Message();
         message.message = data.newMessage;
         message.user = data.chatUserId;
@@ -48,6 +50,7 @@ io.on("connection", (socket) => {
         });
       } else {
         var chat = new Chat();
+
         chat.save((err, doc) => {
           let chatUser = new ChatUser();
           chatUser.user = data.chatUserId;
@@ -55,7 +58,7 @@ io.on("connection", (socket) => {
 
           let chatUser2 = new ChatUser();
           chatUser2.user = data.loggedInUserId;
-          chatUserw.chat = doc._id;
+          chatUser2.chat = doc._id;
 
           let message = new Message();
           message.message = data.newMessage;

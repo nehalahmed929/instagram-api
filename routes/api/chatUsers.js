@@ -11,4 +11,11 @@ router.post("/whereChat", async function (req, res, next) {
   res.send(chatsUsers);
 });
 
+router.post("/whereUser", async function (req, res, next) {
+  let chatsUsers = await ChatUser.find({
+    user: req.body.userId,
+  }).populate("chat");
+  res.send(chatsUsers);
+});
+
 module.exports = router;
